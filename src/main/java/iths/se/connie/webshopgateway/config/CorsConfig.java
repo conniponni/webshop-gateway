@@ -1,3 +1,4 @@
+
 package iths.se.connie.webshopgateway.config;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -8,8 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
-    // TODO: inject the allowed frontend origin(s) from a property
-    @Value("${app.cors.allowed-origins}")
+    @Value("${app.cors.allowed-origins:http://localhost:5174}")
     private String[] allowedOrigins;
 
     @Override
@@ -17,6 +17,7 @@ public class CorsConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(allowedOrigins)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("Authorization", "Content-Type");
+                .allowedHeaders("Authorization", "Content-Type")
+                .allowCredentials(true);
     }
 }

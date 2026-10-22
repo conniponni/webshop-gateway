@@ -2,9 +2,9 @@ package iths.se.connie.webshopgateway.dto;
 
 import java.util.List;
 
-public record AuthServiceResponseDTO(
-        String accessToken,
-        long expiresIn,
+public record AuthServiceResponse(
+        String token,
+        Long expiresIn,
         String subject,
         List<String> roles
 ) {

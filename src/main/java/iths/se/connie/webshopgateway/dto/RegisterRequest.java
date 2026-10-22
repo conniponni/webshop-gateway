@@ -1,8 +1,6 @@
 package iths.se.connie.webshopgateway.dto;
 
-public record RegisterRequestDTO(
+public record RegisterRequest(
         String username,
         String password) {
 }
-
-

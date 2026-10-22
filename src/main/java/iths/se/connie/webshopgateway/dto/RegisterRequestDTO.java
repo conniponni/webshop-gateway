@@ -4,3 +4,5 @@ public record RegisterRequestDTO(
         String username,
         String password) {
 }
+
+

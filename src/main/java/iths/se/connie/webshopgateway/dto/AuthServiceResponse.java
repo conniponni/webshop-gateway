@@ -9,3 +9,5 @@ public record AuthServiceResponse(
         List<String> roles
 ) {
 }
+
+

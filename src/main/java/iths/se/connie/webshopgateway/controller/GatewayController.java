@@ -19,18 +19,15 @@ public class GatewayController {
         this.gatewayProxyService = gatewayProxyService;
     }
 
-
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody String requestBody, HttpServletRequest request) {
         return gatewayProxyService.loginWithCookie(requestBody, request.getHeader(HttpHeaders.CONTENT_TYPE));
     }
 
-
     @PostMapping("/auth/register")
     public ResponseEntity<String> register(@RequestBody String requestBody, HttpServletRequest request) {
         return gatewayProxyService.register(requestBody, request.getHeader(HttpHeaders.CONTENT_TYPE));
     }
-
 
     @PostMapping("/auth/logout")
     public ResponseEntity<Void> logout() {
@@ -42,7 +39,6 @@ public class GatewayController {
         return gatewayProxyService.getJwks();
     }
 
-
     @GetMapping("/auth/me")
     public ResponseEntity<String> me(
             @CookieValue(name = "access_token", required = false) String token) {
@@ -53,7 +49,6 @@ public class GatewayController {
         }
         return gatewayProxyService.getMe(authorization);
     }
-
 
     @GetMapping("/products")
     public ResponseEntity<String> getAllProducts(
@@ -100,7 +95,5 @@ public class GatewayController {
             return (token != null && !token.isBlank()) ? "Bearer " + token : null;
         }
     }
-
-
 
 }

@@ -144,7 +144,6 @@ public class GatewayProxyService {
         }
     }
 
-
     public ResponseEntity<Void> logout() {
         ResponseCookie cookie = ResponseCookie
                 .from("access_token", "")
@@ -160,7 +159,6 @@ public class GatewayProxyService {
                 .build();
     }
 
-
     private ResponseEntity<String> forwardGet(
             String baseUrl,
             String path,
@@ -170,7 +168,6 @@ public class GatewayProxyService {
                         .GET();
         return send(builder, authorization);
     }
-
 
     public ResponseEntity<String> register(String requestBody, String contentType) {
         return forwardPost(authServerUrl, "/auth/register", requestBody, null, contentType);
@@ -199,8 +196,6 @@ public class GatewayProxyService {
     public ResponseEntity<String> deleteProduct(Long id, String authorization) {
         return forwardDelete(productServiceUrl, "/api/products/delete/" + id, authorization);
     }
-
-
 
     private ResponseEntity<String> forwardPost(
             String baseUrl,
@@ -261,7 +256,5 @@ public class GatewayProxyService {
                     .body("Anropet avbröts");
         }
     }
-
-
 
 }

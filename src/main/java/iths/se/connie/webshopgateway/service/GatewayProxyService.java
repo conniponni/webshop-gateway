@@ -117,7 +117,6 @@ public class GatewayProxyService {
     }
 
     private ResponseEntity<?> createLoginResponse(String responseBody) {
-
         try {
             AuthServiceResponse authResponse = objectMapper.readValue(
                     responseBody,
@@ -271,5 +270,4 @@ public class GatewayProxyService {
                     .body("Anropet avbröts");
         }
     }
-
 }

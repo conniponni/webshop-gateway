@@ -108,5 +108,4 @@ public class GatewayController {
             return (token != null && !token.isBlank()) ? "Bearer " + token : null;
         }
     }
-
 }

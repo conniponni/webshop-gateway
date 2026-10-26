@@ -27,7 +27,7 @@ public class GatewayProxyService {
     private final HttpClient httpClient;
     private final boolean cookieSecure;
     private final String cookieSameSite;
-
+    private final String orderServiceUrl;
     private final String authServerUrl;
     private final String productServiceUrl;
 
@@ -45,6 +45,7 @@ public class GatewayProxyService {
             @Value("${app.product-service-url:http://localhost:8081}")
             String productServiceUrl,
 
+            @Value("${app.order-service-url}") String orderServiceUrl,
             @Value("${app.cookie.secure:false}")
             boolean cookieSecure,
 
@@ -55,9 +56,24 @@ public class GatewayProxyService {
         this.cookieSameSite = cookieSameSite;
         this.authServerUrl = authServerUrl;
         this.productServiceUrl = productServiceUrl;
+        this.orderServiceUrl = orderServiceUrl;
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(5))
                 .build();
+    }
+
+    public ResponseEntity<String> createOrder(
+            String requestBody,
+            String authorization,
+            String contentType) {
+        return forwardPost(
+                orderServiceUrl,
+                "/order",
+                requestBody,
+                authorization,
+                contentType
+        );
+
     }
 
     public ResponseEntity<?> loginWithCookie(

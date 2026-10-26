@@ -90,6 +90,19 @@ public class GatewayController {
         );
     }
 
+    @PostMapping("/order")
+    public ResponseEntity<String> createOrder(
+            @RequestBody String requestBody,
+            @CookieValue(name = "access_token", required = false) String token,
+            HttpServletRequest request)
+    {
+        return gatewayProxyService.createOrder(
+                requestBody,
+                toBearerHeader(token),
+                request.getHeader(HttpHeaders.CONTENT_TYPE)
+        );
+    }
+
     private String toBearerHeader(String token) {
         {
             return (token != null && !token.isBlank()) ? "Bearer " + token : null;

@@ -196,19 +196,19 @@ public class GatewayProxyService {
     }
 
     public ResponseEntity<String> getAllProducts(String authorization) {
-        return forwardGet(productServiceUrl, "/api/products", authorization);
+        return forwardGet(productServiceUrl, "/products", authorization);
     }
 
     public ResponseEntity<String> getProductById(Long id, String authorization) {
-        return forwardGet(productServiceUrl, "/api/products/" + id, authorization);
+        return forwardGet(productServiceUrl, "/products/" + id, authorization);
     }
 
     public ResponseEntity<String> addProduct(String requestBody, String authorization, String contentType) {
-        return forwardPost(productServiceUrl, "/api/products/add", requestBody, authorization, contentType);
+        return forwardPost(productServiceUrl, "/products/add", requestBody, authorization, contentType);
     }
 
     public ResponseEntity<String> deleteProduct(Long id, String authorization) {
-        return forwardDelete(productServiceUrl, "/api/products/delete/" + id, authorization);
+        return forwardDelete(productServiceUrl, "/products/delete/" + id, authorization);
     }
 
     private ResponseEntity<String> forwardPost(

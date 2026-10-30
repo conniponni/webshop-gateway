@@ -101,7 +101,14 @@ public class GatewayController {
         );
     }
 
-    @PostMapping("/order")
+    // Endpoint för att hämt alla ordrar via gateway
+    @GetMapping("orders")
+    public ResponseEntity<String> getAllOrders(
+            @CookieValue(name = "access_token", required = false) String token) {
+        return gatewayProxyService.getAllOrders(toBearerHeader(token));
+    }
+
+    @PostMapping("/orders")
     public ResponseEntity<String> createOrder(
             @RequestBody String requestBody,
             @CookieValue(name = "access_token", required = false) String token,

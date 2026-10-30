@@ -72,12 +72,17 @@ public class GatewayProxyService {
         // Anropar forwardPost-metoden för att skicka en POST-förfrågan till ordertjänsten med hjälp av requestBody, authorization och contentType
         return forwardPost(
                 orderServiceUrl,
-                "/order",
+                "/orders",
                 requestBody,
                 authorization,
                 contentType
         );
 
+    }
+
+    // Hämta alla ordrar
+    public ResponseEntity<String> getAllOrders(String authorization) {
+        return forwardGet(orderServiceUrl, "/orders", authorization);
     }
 
     // Metod för att logga in via gateway och sätta en cookie med access_token

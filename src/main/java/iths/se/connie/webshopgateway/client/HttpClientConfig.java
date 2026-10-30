@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class HttpClientConfig {
+    //bean för httpClient som konfigurerar anslutningstiden till 5 sekunder och returnerar en instans av HttpClient
     @Bean
     public HttpClient httpClient() {
         return HttpClient.newBuilder()

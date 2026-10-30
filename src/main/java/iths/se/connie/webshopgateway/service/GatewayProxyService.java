@@ -31,6 +31,7 @@ public class GatewayProxyService {
     private final String authServerUrl;
     private final String productServiceUrl;
 
+    // ObjektMapper används för att konvertera JSON-strängar till Java-objekt och vice versa
     private final ObjectMapper objectMapper = new ObjectMapper()
             .configure(
                     DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
@@ -38,6 +39,7 @@ public class GatewayProxyService {
             );
 
 
+    // Konstruktor för GatewayProxyService som tar emot värden från application.properties
     public GatewayProxyService(
             @Value("${app.auth-server-url:http://localhost:8080}")
             String authServerUrl,
@@ -61,11 +63,13 @@ public class GatewayProxyService {
                 .connectTimeout(Duration.ofSeconds(5))
                 .build();
     }
+    // Metod för att skapa en order via gateway
 
     public ResponseEntity<String> createOrder(
             String requestBody,
             String authorization,
             String contentType) {
+        // Anropar forwardPost-metoden för att skicka en POST-förfrågan till ordertjänsten med hjälp av requestBody, authorization och contentType
         return forwardPost(
                 orderServiceUrl,
                 "/order",
@@ -76,10 +80,12 @@ public class GatewayProxyService {
 
     }
 
+    // Metod för att logga in via gateway och sätta en cookie med access_token
     public ResponseEntity<?> loginWithCookie(
             String requestBody,
             String contentType
     ) {
+        // Skapar en HttpRequest.Builder för att skicka en POST-förfrågan till auth-servern med hjälp av requestBody och contentType
         HttpRequest.Builder request = HttpRequest.newBuilder(
                         URI.create(authServerUrl + "/auth/login")
                 )
@@ -92,30 +98,36 @@ public class GatewayProxyService {
         return sendLogin(request);
     }
 
+    // Metod för att logga ut via gateway och ta bort access_token-cookien
     private ResponseEntity<?> sendLogin(
             HttpRequest.Builder request
     ) {
+        // Skickar förfrågan till auth-servern och hanterar svaret
         try {
             HttpResponse<String> response = httpClient.send(
                     request.build(),
                     HttpResponse.BodyHandlers.ofString()
             );
+            // Om svaret från auth-servern inte är framgångsrikt (statuskod 2xx), returnera svaret som det är
             if (response.statusCode() < 200 ||
                     response.statusCode() >= 300) {
                 return ResponseEntity
                         .status(response.statusCode())
                         .body(response.body());
             }
+            // Om svaret är framgångsrikt, skapa en login-response med access_token och cookie
             return createLoginResponse(response.body());
         } catch (IOException | InterruptedException ex) {
             if (ex instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }
+            // Om det uppstår ett fel vid kommunikationen med auth-servern, returnera en 502 Bad Gateway-status med ett felmeddelande
             return ResponseEntity.status(502)
                     .body("Gateway could not reach auth service");
         }
     }
 
+    // Metod för att skapa en login-response med access_token och cookie
     private ResponseEntity<?> createLoginResponse(String responseBody) {
         try {
             AuthServiceResponse authResponse = objectMapper.readValue(
@@ -123,7 +135,7 @@ public class GatewayProxyService {
                     AuthServiceResponse.class
 
             );
-
+            //  Om authResponse inte innehåller en giltig token eller expiresIn, returnera en 502 Bad Gateway-status med ett felmeddelande
             if (authResponse.token() == null
                     || authResponse.token().isBlank()
                     || authResponse.expiresIn() <= 0) {
@@ -131,7 +143,7 @@ public class GatewayProxyService {
                         .status(502)
                         .body("Auth service returned an invalid response");
             }
-
+            // Skapa en ResponseCookie med access_token och inställningar för httpOnly, secure, sameSite, path och maxAge
             ResponseCookie cookie = ResponseCookie
                     .from("access_token", authResponse.token())
                     .httpOnly(true)
@@ -141,16 +153,19 @@ public class GatewayProxyService {
                     .maxAge(Duration.ofSeconds(authResponse.expiresIn()))
                     .build();
 
+            // Skapa en LoginResponse med expiresIn, subject och roles från authResponse
             LoginResponse loginResponse = new LoginResponse(
                     authResponse.expiresIn(),
                     authResponse.subject(),
                     authResponse.roles()
             );
 
+            // Returnera en ResponseEntity med status 200 OK, set-cookie-headern och loginResponse som body
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, cookie.toString())
                     .body(loginResponse);
 
+            // om fel uppstår vid json svaret frpn auth servern, returnera 502 Bad Gateway med ett felmeddelande
         } catch (JacksonException ex) {
             return ResponseEntity
                     .status(502)
@@ -158,6 +173,7 @@ public class GatewayProxyService {
         }
     }
 
+    // metod för att logga ut via gateway och ta bort access_token-cookien
     public ResponseEntity<Void> logout() {
         ResponseCookie cookie = ResponseCookie
                 .from("access_token", "")
@@ -168,11 +184,13 @@ public class GatewayProxyService {
                 .maxAge(Duration.ZERO)
                 .build();
 
+        // return för att ta bort acces token cookien och returnera 204 No Content
         return ResponseEntity.noContent()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .build();
     }
 
+    // metod för att hämta information om användaren via gateway
     private ResponseEntity<String> forwardGet(
             String baseUrl,
             String path,
@@ -182,52 +200,54 @@ public class GatewayProxyService {
                         .GET();
         return send(builder, authorization);
     }
-
+    // register metod
     public ResponseEntity<String> register(String requestBody, String contentType) {
         return forwardPost(authServerUrl, "/auth/register", requestBody, null, contentType);
     }
-
+    // metod för att hämta information om den inloggade användaren via gateway
     public ResponseEntity<String> getMe(String authorization) {
         return forwardGet(authServerUrl, "/auth/me", authorization);
     }
 
+    // metod för att hämta JWKS via gateway
     public ResponseEntity<String> getJwks() {
         return forwardGet(authServerUrl, "/auth/jwks", null);
     }
-
+    // metod för att hämta alla produkter via gateway
     public ResponseEntity<String> getAllProducts(String authorization) {
         return forwardGet(productServiceUrl, "/products", authorization);
     }
-
+    //  metod för att hämta en produkt efter ID via gateway
     public ResponseEntity<String> getProductById(Long id, String authorization) {
         return forwardGet(productServiceUrl, "/products/" + id, authorization);
     }
 
+    // metod för att lägga till en ny produkt via gateway
     public ResponseEntity<String> addProduct(String requestBody, String authorization, String contentType) {
         return forwardPost(productServiceUrl, "/products/add", requestBody, authorization, contentType);
     }
-
+    // metod för att ta bort en produkt via gateway
     public ResponseEntity<String> deleteProduct(Long id, String authorization) {
         return forwardDelete(productServiceUrl, "/products/delete/" + id, authorization);
     }
-
+    // metod för att minska lagersaldo för en lista av produkter via gateway
     private ResponseEntity<String> forwardPost(
             String baseUrl,
             String path,
             String requestBody,
             String authorization,
             String contentType) {
-
+        //builder för att skapa en HttpRequest med POST-metod och requestBody
         HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(baseUrl + path))
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody));
-
+        // Om contentType inte är null eller blank, sätt Content-Type-headern i requesten
         if (contentType != null && !contentType.isBlank()) {
             builder.header(HttpHeaders.CONTENT_TYPE, contentType);
         }
 
         return send(builder, authorization);
     }
-
+    // metod för att ta bort en produkt via gateway
     private ResponseEntity<String> forwardDelete(
             String baseUrl,
             String path,
@@ -238,7 +258,7 @@ public class GatewayProxyService {
                         .DELETE();
         return send(builder, authorization);
     }
-
+    // metod för att skicka en HttpRequest och hantera svaret
     private ResponseEntity<String> send(HttpRequest.Builder builder, String authorization) {
         if (authorization != null && !authorization.isBlank()) {
             builder.header(
@@ -246,12 +266,13 @@ public class GatewayProxyService {
                     authorization
             );
         }
+        // Skickar förfrågan och hanterar svaret
         try {
             HttpResponse<String> response = httpClient.send(
                     builder.build(),
                     HttpResponse.BodyHandlers.ofString()
             );
-
+            // Skapar en ResponseEntity.BodyBuilder med statuskoden från svaret
             ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(response.statusCode());
 
             response.headers()

@@ -8,9 +8,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
-
+    // Bean för att konfigurera säkerhetsfilterkedjan för webbapplikationen
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // Konfigurera säkerhetsinställningar för HTTP-förfrågningar
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session

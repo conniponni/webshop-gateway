@@ -14,8 +14,10 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
+    // Bean för att konfigurera CORS-inställningar för webbapplikationen
     @Bean
     public CorsFilter corsFilter() {
+        // Skapa en ny CorsConfiguration-instans
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of("http://localhost:5173"));

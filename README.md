@@ -16,6 +16,7 @@ The Gateway handles:
 * Managing the `access_token` authentication cookie.
 * Forwarding product requests to Product Service.
 * Forwarding order creation requests to Order Service.
+* Forwarding order retrieval requests to Order Service.
 * Forwarding bearer tokens to backend services when available.
 * Returning responses from backend services to the frontend.
 * Providing OpenAPI documentation for the API.
@@ -83,9 +84,10 @@ All controller endpoints use the `/gateway` base path.
 
 ### Orders
 
-| Method | Endpoint         | Description                                          |
-| ------ | ---------------- | ---------------------------------------------------- |
-| `POST` | `/gateway/order` | Forwards an order creation request to Order Service. |
+| Method | Endpoint          | Description                                                                 |
+| ------ | ----------------- | --------------------------------------------------------------------------- |
+| `POST` | `/gateway/orders` | Forwards an order creation request to Order Service.                        |
+| `GET`  | `/gateway/orders` | Retrieves orders from Order Service based on the authenticated user's role. |
 
 ## Authentication and Cookies
 
@@ -119,7 +121,7 @@ The Gateway forwards requests to three backend services:
 
 * **Auth Service** handles authentication and user-related requests.
 * **Product Service** handles product-related requests.
-* **Order Service** handles order creation.
+* **Order Service** handles order creation and retrieving orders.
 
 The service URLs are configurable through environment variables.
 
@@ -142,7 +144,7 @@ The exact accessibility of these endpoints depends on the application's runtime 
 * The Maven Wrapper included in the repository.
 * Auth Service running on its configured address.
 * Product Service running on its configured address.
-* Order Service running on its configured address when testing order creation.
+* Order Service running on its configured address when testing order creation or retrieval.
 
 ### Windows
 

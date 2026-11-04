@@ -229,11 +229,11 @@ public class GatewayProxyService {
 
     // metod för att lägga till en ny produkt via gateway
     public ResponseEntity<String> addProduct(String requestBody, String authorization, String contentType) {
-        return forwardPost(productServiceUrl, "/products/add", requestBody, authorization, contentType);
+        return forwardPost(productServiceUrl, "/products", requestBody, authorization, contentType);
     }
     // metod för att ta bort en produkt via gateway
     public ResponseEntity<String> deleteProduct(Long id, String authorization) {
-        return forwardDelete(productServiceUrl, "/products/delete/" + id, authorization);
+        return forwardDelete(productServiceUrl, "/products" + id, authorization);
     }
     // metod för att minska lagersaldo för en lista av produkter via gateway
     private ResponseEntity<String> forwardPost(

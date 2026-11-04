@@ -76,7 +76,7 @@ public class GatewayController {
     }
 
     // Endpoint för att lägga till en ny produkt via gateway
-    @PostMapping("/products/add")
+    @PostMapping("/products")
     public ResponseEntity<String> addProduct(
             @RequestBody String requestBody,
             // CookieValue(name = "access_token", required = false) String accessToken,
@@ -91,7 +91,7 @@ public class GatewayController {
         );
     }
 
-    @DeleteMapping("/products/delete/{id}")
+    @DeleteMapping("/products/{id}")
     public ResponseEntity<String> deleteProduct(
             @PathVariable Long id,
             @CookieValue(name = "access_token", required = false) String accessToken,
